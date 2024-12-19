@@ -3,6 +3,20 @@ type Pizza = {
   price: number;
 };
 
+type Order = {
+  id: number;
+  pizza: Pizza;
+  status: string;
+};
+
+/* 
+to make a property optional put a question mark before the colon like in name below
+ type Pizza = {
+     name?: string;
+     price: number;
+   };
+*/
+
 const menu = [
   { name: 'Margherita', price: 8 },
   { name: 'Pepperoni', price: 10 },
@@ -12,13 +26,16 @@ const menu = [
 
 let cashInRegister = 100;
 let nextOrderId = 1;
-const orderQueue = [];
+const orderQueue: Array<Order> = [];
+
+// can also define arrays like below
+// const orderQueue: Order[] = []
 
 function addNewPizza(pizzaObj: Pizza) {
   menu.push(pizzaObj);
 }
 
-function placeOrder(pizzaName) {
+function placeOrder(pizzaName: string) {
   const selectedPizza = menu.find((pizzaObj) => pizzaObj.name === pizzaName);
   if (!selectedPizza) {
     console.error(`${pizzaName} does not exist in the menu`);
@@ -36,6 +53,10 @@ function placeOrder(pizzaName) {
 
 function completeOrder(orderId: number) {
   const order = orderQueue.find((order) => order.id === orderId);
+  if (!order) {
+    console.log('order does not exist');
+    return;
+  }
   order.status = 'completed';
   return order;
 }

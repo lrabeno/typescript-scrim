@@ -1,4 +1,5 @@
 type Pizza = {
+  id: number;
   name: string;
   price: number;
 };
@@ -6,7 +7,7 @@ type Pizza = {
 type Order = {
   id: number;
   pizza: Pizza;
-  status: string;
+  status: 'ordered' | 'completed';
 };
 
 /* 
@@ -17,11 +18,11 @@ to make a property optional put a question mark before the colon like in name be
    };
 */
 
-const menu = [
-  { name: 'Margherita', price: 8 },
-  { name: 'Pepperoni', price: 10 },
-  { name: 'Hawaiian', price: 10 },
-  { name: 'Veggie', price: 9 },
+const menu: Array<Pizza> = [
+  { id: 1, name: 'Margherita', price: 8 },
+  { id: 2, name: 'Pepperoni', price: 10 },
+  { id: 3, name: 'Hawaiian', price: 10 },
+  { id: 4, name: 'Veggie', price: 9 },
 ];
 
 let cashInRegister = 100;
@@ -31,18 +32,19 @@ const orderQueue: Array<Order> = [];
 // can also define arrays like below
 // const orderQueue: Order[] = []
 
-function addNewPizza(pizzaObj: Pizza) {
+function addNewPizza(pizzaObj: Pizza): void {
   menu.push(pizzaObj);
 }
 
-function placeOrder(pizzaName: string) {
+function placeOrder(pizzaName: string): Order | undefined {
   const selectedPizza = menu.find((pizzaObj) => pizzaObj.name === pizzaName);
   if (!selectedPizza) {
     console.error(`${pizzaName} does not exist in the menu`);
     return;
   }
   cashInRegister += selectedPizza.price;
-  const newOrder = {
+  // have to tell ts that the const newOrder is of the type Order, otherwise when we push ts will infer a string and give us a ts error
+  const newOrder: Order = {
     id: nextOrderId++,
     pizza: selectedPizza,
     status: 'ordered',
@@ -51,7 +53,7 @@ function placeOrder(pizzaName: string) {
   return newOrder;
 }
 
-function completeOrder(orderId: number) {
+function completeOrder(orderId: number): Order | undefined {
   const order = orderQueue.find((order) => order.id === orderId);
   if (!order) {
     console.log('order does not exist');
@@ -59,6 +61,20 @@ function completeOrder(orderId: number) {
   }
   order.status = 'completed';
   return order;
+}
+
+export function getPizzaDetail(identifier: string | number): Pizza | undefined {
+  if (typeof identifier === 'string') {
+    return menu.find(
+      (pizza) => pizza.name.toLowerCase() === identifier.toLowerCase()
+    );
+  } else if (typeof identifier === 'number') {
+    return menu.find((pizza) => pizza.id === identifier);
+  } else {
+    throw new TypeError(
+      'Parameter `identifier` must be either a string or a number'
+    );
+  }
 }
 
 addNewPizza({ name: 'Chicken Bacon Ranch', price: 12 });
